@@ -17,9 +17,8 @@ def analytics():
     store_id = g.current_user["store_id"]
     collection = db["sales_records"]
 
-    # ── Total Records (Row count of the latest dataset) ──
-    latest_dataset = db["datasets"].find_one({"owner_id": store_id}, sort=[("uploaded_at", -1)])
-    total_records = latest_dataset.get("row_count", 0) if latest_dataset else 0
+    # ── Total Records ──
+    total_records = collection.count_documents({"store_id": store_id})
 
     if total_records == 0:
         return jsonify({
