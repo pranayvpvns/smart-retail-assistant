@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Smart Retail Assistant — AI-powered demand forecasting, anomaly detection, and sales analytics dashboard." />
+  <title>Smart Retail Assistant</title>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       AUTH SCREEN
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">
+          <i data-lucide="bar-chart-3"></i>
+        </div>
+        <h1>Smart Retail</h1>
+        <p class="auth-subtitle">AI-Powered Retail Intelligence</p>
+      </div>
+
+      <!-- Tab Switch -->
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" onclick="showAuthTab('login')">Sign In</button>
+        <button id="tab-register" class="auth-tab" onclick="showAuthTab('register')">Create Account</button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      <div id="login-form" class="auth-form">
+
+        <!-- Role hint tabs (visual only — backend determines role from DB) -->
+        <div class="role-tabs" style="margin-bottom:20px;">
+          <button id="login-role-owner" class="role-tab active" onclick="setLoginRole('owner')">
+            <i data-lucide="store"></i> Owner Login
+          </button>
+          <button id="login-role-user" class="role-tab" onclick="setLoginRole('user')">
+            <i data-lucide="shopping-bag"></i> Buyer Login
+          </button>
+        </div>
+
+        <p id="login-role-hint" class="auth-role-hint">
+          Sign in to your owner account to access the analytics dashboard.
+        </p>
+
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="login-email" placeholder="you@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="login-password" placeholder="••••••••" required />
+            </div>
+          </div>
+          <button type="submit" id="login-btn" class="btn btn-primary btn-full">
+            <span>Sign In</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Register Forms -->
+      <div id="register-form" class="auth-form hidden">
+        <!-- Role type tabs -->
+        <div class="role-tabs">
+          <button id="role-tab-owner" class="role-tab active" onclick="showRoleTab('owner')">
+            <i data-lucide="store"></i> Owner
+          </button>
+          <button id="role-tab-user" class="role-tab" onclick="showRoleTab('user')">
+            <i data-lucide="shopping-bag"></i> Buyer
+          </button>
+        </div>
+
+        <!-- Owner Register -->
+        <form id="owner-register-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="reg-store">Store Name</label>
+            <div class="input-wrapper">
+              <i data-lucide="store"></i>
+              <input type="text" id="reg-store" placeholder="My Retail Store" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email Address</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="reg-email" placeholder="you@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="reg-password" placeholder="Min 8 characters" required minlength="8" />
+            </div>
+          </div>
+          <button type="submit" id="register-btn" class="btn btn-primary btn-full">
+            <span>Create Owner Account</span>
+            <i data-lucide="user-plus"></i>
+          </button>
+        </form>
+
+        <!-- Buyer Register -->
+        <form id="buyer-register-form" class="hidden" onsubmit="handleUserRegister(event)">
+          <div class="form-group">
+            <label for="buyer-name">Full Name</label>
+            <div class="input-wrapper">
+              <i data-lucide="user"></i>
+              <input type="text" id="buyer-name" placeholder="Your Name" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="buyer-email">Email Address</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="buyer-email" placeholder="you@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="buyer-password">Password</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="buyer-password" placeholder="Min 8 characters" required minlength="8" />
+            </div>
+          </div>
+          <button type="submit" id="buyer-register-btn" class="btn btn-primary btn-full">
+            <span>Create Buyer Account</span>
+            <i data-lucide="shopping-bag"></i>
+          </button>
+        </form>
+      </div>
+
+      <div id="auth-error" class="auth-error hidden"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN APP SHELL (hidden until auth)
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="app-shell" class="app-shell hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon"><i data-lucide="bar-chart-3"></i></div>
+          <div class="sidebar-logo-text">
+            <span class="logo-title">Smart Retail</span>
+            <span class="logo-sub" id="sidebar-store-name">Dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="analytics" onclick="navigateTo('analytics')">
+          <i data-lucide="bar-chart-big"></i>
+          <span>Analytics</span>
+        </button>
+        <button class="nav-item" data-page="insights" onclick="navigateTo('insights')">
+          <i data-lucide="sparkles"></i>
+          <span>AI Insights</span>
+        </button>
+        <button class="nav-item" data-page="data" onclick="navigateTo('data')">
+          <i data-lucide="database"></i>
+          <span>Data Manager</span>
+        </button>
+        <button class="nav-item" data-page="forecast" onclick="navigateTo('forecast')">
+          <i data-lucide="trending-up"></i>
+          <span>Forecast</span>
+        </button>
+        <button class="nav-item" data-page="anomaly" onclick="navigateTo('anomaly')">
+          <i data-lucide="shield-alert"></i>
+          <span>Anomaly Alerts</span>
+        </button>
+        <button class="nav-item" data-page="assistant" onclick="navigateTo('assistant')">
+          <i data-lucide="bot"></i>
+          <span>AI Assistant</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <button class="nav-item" data-page="products" onclick="navigateTo('products')">
+          <i data-lucide="boxes"></i>
+          <span>Inventory</span>
+        </button>
+        <button class="nav-item" data-page="orders" onclick="navigateTo('orders')">
+          <i data-lucide="bell"></i>
+          <span>Orders</span>
+          <span class="nav-badge hidden" id="pending-orders-badge">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar"><i data-lucide="user"></i></div>
+          <div class="user-details">
+            <span id="sidebar-user-email" class="user-email">user@email.com</span>
+            <span class="user-role">Store Admin</span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()">
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i data-lucide="menu"></i>
+          </button>
+          <h2 id="page-title" class="page-title">Dashboard</h2>
+        </div>
+        <div class="top-bar-right">
+          <div class="health-indicator" id="health-indicator">
+            <span class="health-dot"></span>
+            <span class="health-text">Checking...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Container -->
+      <div class="page-container">
+
+        <!-- ─── DASHBOARD PAGE ─── -->
+        <section id="page-dashboard" class="page active">
+          <div class="dashboard-grid">
+
+            <!-- Stat Cards -->
+            <div class="stat-card stat-primary" id="stat-records">
+              <div class="stat-icon"><i data-lucide="file-spreadsheet"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-records-val">—</span>
+                <span class="stat-label">Total Records</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-success" id="stat-products">
+              <div class="stat-icon"><i data-lucide="package"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-products-val">—</span>
+                <span class="stat-label">Products Tracked</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-warning" id="stat-alerts-warn">
+              <div class="stat-icon"><i data-lucide="alert-triangle"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-warnings-val">—</span>
+                <span class="stat-label">Warnings</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-danger" id="stat-alerts-crit">
+              <div class="stat-icon"><i data-lucide="alert-octagon"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-critical-val">—</span>
+                <span class="stat-label">Critical Alerts</span>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-section quick-actions-section">
+              <h3 class="section-title"><i data-lucide="zap"></i> Quick Actions</h3>
+              <div class="quick-actions">
+                <button class="action-card" onclick="navigateTo('analytics')">
+                  <i data-lucide="bar-chart-big"></i>
+                  <span>View Analytics</span>
+                </button>
+                <button class="action-card" onclick="navigateTo('data')">
+                  <i data-lucide="upload-cloud"></i>
+                  <span>Upload CSV</span>
+                </button>
+                <button class="action-card" onclick="navigateTo('forecast')">
+                  <i data-lucide="line-chart"></i>
+                  <span>View Forecast</span>
+                </button>
+                <button class="action-card" onclick="navigateTo('anomaly')">
+                  <i data-lucide="scan-search"></i>
+                  <span>Run Detection</span>
+                </button>
+                <button class="action-card" onclick="handleRetrain()">
+                  <i data-lucide="refresh-cw"></i>
+                  <span>Retrain Models</span>
+                </button>
+                <button class="action-card" onclick="navigateTo('assistant')">
+                  <i data-lucide="bot"></i>
+                  <span>Ask AI Assistant</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="dashboard-section recent-alerts-section">
+              <h3 class="section-title"><i data-lucide="bell"></i> Recent Alerts</h3>
+              <div id="recent-alerts-list" class="alerts-mini-list">
+                <div class="empty-state-mini">No alerts yet</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─── ANALYTICS DASHBOARD PAGE ─── -->
+        <section id="page-analytics" class="page">
+
+          <!-- KPI Cards Row -->
+          <div class="analytics-kpi-row">
+            <div class="analytics-kpi-card kpi-revenue">
+              <div class="kpi-icon-wrap"><i data-lucide="indian-rupee"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-value" id="kpi-revenue">—</span>
+                <span class="kpi-label">Total Revenue</span>
+              </div>
+              <div class="kpi-sparkline" id="kpi-revenue-spark"></div>
+            </div>
+            <div class="analytics-kpi-card kpi-orders">
+              <div class="kpi-icon-wrap"><i data-lucide="shopping-cart"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-value" id="kpi-orders">—</span>
+                <span class="kpi-label">Total Orders</span>
+              </div>
+            </div>
+            <div class="analytics-kpi-card kpi-category">
+              <div class="kpi-icon-wrap"><i data-lucide="crown"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-value kpi-value-text" id="kpi-top-category">—</span>
+                <span class="kpi-label">Top Category</span>
+              </div>
+            </div>
+            <div class="analytics-kpi-card kpi-products">
+              <div class="kpi-icon-wrap"><i data-lucide="package"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-value" id="kpi-products-sold">—</span>
+                <span class="kpi-label">Products Sold</span>
+              </div>
+            </div>
+            <div class="analytics-kpi-card kpi-alerts">
+              <div class="kpi-icon-wrap"><i data-lucide="bell-ring"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-value" id="kpi-active-alerts">—</span>
+                <span class="kpi-label">Active Alerts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row 1: Sales Trend + Category Breakdown -->
+          <div class="analytics-charts-row">
+            <div class="analytics-chart-card analytics-chart-wide">
+              <div class="analytics-card-header">
+                <div class="analytics-card-title">
+                  <i data-lucide="trending-up"></i>
+                  <h3>Sales Trends</h3>
+                </div>
+                <div class="analytics-chart-controls">
+                  <button class="chart-toggle-btn active" data-metric="revenue"
+                    onclick="toggleSalesTrendMetric('revenue', this)">Revenue</button>
+                  <button class="chart-toggle-btn" data-metric="quantity"
+                    onclick="toggleSalesTrendMetric('quantity', this)">Quantity</button>
+                </div>
+              </div>
+              <div class="analytics-chart-body">
+                <canvas id="analytics-trend-chart"></canvas>
+              </div>
+            </div>
+            <div class="analytics-chart-card analytics-chart-narrow">
+              <div class="analytics-card-header">
+                <div class="analytics-card-title">
+                  <i data-lucide="pie-chart"></i>
+                  <h3>Category Breakdown</h3>
+                </div>
+              </div>
+              <div class="analytics-chart-body analytics-doughnut-wrap">
+                <canvas id="analytics-category-chart"></canvas>
+              </div>
+              <div class="analytics-category-legend" id="analytics-category-legend"></div>
+            </div>
+          </div>
+
+          <!-- Charts Row 2: Top Products + Forecast Preview -->
+          <div class="analytics-charts-row">
+            <div class="analytics-chart-card analytics-chart-half">
+              <div class="analytics-card-header">
+                <div class="analytics-card-title">
+                  <i data-lucide="bar-chart-3"></i>
+                  <h3>Top Selling Products</h3>
+                </div>
+              </div>
+              <div class="analytics-chart-body">
+                <canvas id="analytics-products-chart"></canvas>
+              </div>
+            </div>
+            <div class="analytics-chart-card analytics-chart-half">
+              <div class="analytics-card-header">
+                <div class="analytics-card-title">
+                  <i data-lucide="activity"></i>
+                  <h3>Forecast Preview</h3>
+                </div>
+                <div class="analytics-chart-controls">
+                  <select id="analytics-forecast-product" class="analytics-select" onchange="loadAnalyticsForecast()">
+                    <option value="">Select Product</option>
+                  </select>
+                </div>
+              </div>
+              <div class="analytics-chart-body">
+                <canvas id="analytics-forecast-chart"></canvas>
+              </div>
+              <div class="analytics-forecast-summary" id="analytics-forecast-summary">
+                <div class="forecast-summary-empty">
+                  <i data-lucide="line-chart"></i>
+                  <span>Select a product to view forecast</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Anomaly Alerts Panel -->
+          <div class="analytics-alerts-panel">
+            <div class="analytics-card-header">
+              <div class="analytics-card-title">
+                <i data-lucide="shield-alert"></i>
+                <h3>Anomaly Alerts</h3>
+              </div>
+              <div class="analytics-chart-controls">
+                <button class="btn btn-warning btn-sm"
+                  onclick="handleRunDetection(); setTimeout(loadAnalyticsAlerts, 2000);">
+                  <i data-lucide="scan-search"></i> Run Detection
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="loadAnalyticsAlerts()">
+                  <i data-lucide="refresh-cw"></i> Refresh
+                </button>
+              </div>
+            </div>
+            <div class="analytics-alerts-grid" id="analytics-alerts-grid">
+              <div class="analytics-empty-state">
+                <i data-lucide="check-circle"></i>
+                <span>No anomaly alerts detected</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── INSIGHTS PAGE (Moved from Analytics) ─── -->
+        <section id="page-insights" class="page">
+          <div class="content-card insight-synthesis-card">
+            <div class="insight-panel-header">
+              <div class="insight-title-group">
+                <div class="insight-icon-pulse">
+                  <i data-lucide="brain-circuit"></i>
+                </div>
+                <div class="insight-text-meta">
+                  <h3>AI Insight Synthesis</h3>
+                  <span class="insight-subtitle">ML signals → Business intelligence</span>
+                </div>
+                <span class="ai-badge">Powered by GPT-4o</span>
+              </div>
+              <div class="insight-panel-actions">
+                <button class="btn btn-primary btn-sm insight-generate-btn" onclick="loadInsightSynthesis()"
+                  id="insight-generate-btn">
+                  <i data-lucide="sparkles"></i>
+                  <span>Synthesize Insights</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Executive Summary -->
+            <div class="insight-executive-summary" id="insight-executive-summary" style="display:none;">
+              <div class="exec-summary-icon"><i data-lucide="file-text"></i></div>
+              <p id="insight-summary-text"></p>
+              <div class="insight-signals-used" id="insight-signals-used"></div>
+            </div>
+
+            <!-- Insights Grid -->
+            <div class="insight-cards-container" id="insight-cards-container">
+              <div class="insight-placeholder">
+                <div class="insight-placeholder-visual">
+                  <div class="insight-orbit">
+                    <div class="insight-orbit-ring"></div>
+                    <div class="insight-orbit-dot insight-dot-1"><i data-lucide="trending-up"></i></div>
+                    <div class="insight-orbit-dot insight-dot-2"><i data-lucide="shield-alert"></i></div>
+                    <div class="insight-orbit-dot insight-dot-3"><i data-lucide="package"></i></div>
+                    <div class="insight-orbit-dot insight-dot-4"><i data-lucide="indian-rupee"></i></div>
+                    <div class="insight-orbit-core"><i data-lucide="brain"></i></div>
+                  </div>
+                </div>
+                <h4>Intelligent Business Insights</h4>
+                <p>Click <strong>"Synthesize Insights"</strong> to transform your ML forecasts, anomaly alerts, and
+                  sales data into prioritized, actionable business intelligence.</p>
+                <div class="insight-feature-tags">
+                  <span class="insight-tag"><i data-lucide="trending-up"></i> Demand Forecasts</span>
+                  <span class="insight-tag"><i data-lucide="shield-alert"></i> Anomaly Signals</span>
+                  <span class="insight-tag"><i data-lucide="package"></i> Inventory Risks</span>
+                  <span class="insight-tag"><i data-lucide="indian-rupee"></i> Revenue Patterns</span>
+                  <span class="insight-tag"><i data-lucide="settings"></i> Operations</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── DATA PAGE ─── -->
+        <section id="page-data" class="page">
+
+          <div class="analytics-grid-two">
+            <!-- Upload Card -->
+            <div class="content-card upload-card">
+              <div class="card-header">
+                <h3><i data-lucide="upload-cloud"></i> Upload & Copy</h3>
+                <span class="badge badge-info">Saves to Project</span>
+              </div>
+              <div class="card-body">
+                <div class="upload-zone" id="upload-zone" ondrop="handleFileDrop(event)"
+                  ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                  <i data-lucide="hard-drive-upload"></i>
+                  <p>Drag &amp; drop to <strong>Copy</strong> to Cloud</p>
+                  <label for="file-input" class="btn btn-outline btn-sm">Browse</label>
+                  <input type="file" id="file-input" accept=".csv" hidden onchange="handleFileSelect(event)" />
+                  <span class="upload-hint" id="upload-filename"></span>
+                </div>
+                <button id="upload-btn" class="btn btn-primary btn-full" onclick="handleUpload()" disabled>
+                  <i data-lucide="upload"></i> Upload &amp; Sync
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Records Table -->
+          <div class="content-card records-card">
+            <div class="card-header">
+              <h3><i data-lucide="table-2"></i> Sales Records</h3>
+              <div class="card-header-actions">
+                <button class="btn btn-outline btn-sm" onclick="loadRecords()">
+                  <i data-lucide="refresh-cw"></i> Refresh
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="handleDeleteRecords()">
+                  <i data-lucide="trash-2"></i> Delete All
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="data-table" id="records-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Product ID</th>
+                      <th>Store ID</th>
+                      <th>Quantity Sold</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="records-tbody">
+                    <tr>
+                      <td colspan="5" class="empty-cell">No records loaded</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination" id="records-pagination"></div>
+            </div>
+          </div>
+
+          <!-- Dataset Registry Table (NEW) -->
+          <div class="content-card registry-card" style="margin-top:24px;">
+            <div class="card-header">
+              <h3><i data-lucide="database"></i> Registered Datasets</h3>
+              <div class="card-header-actions">
+                <button class="btn btn-outline btn-sm" onclick="loadDatasetRegistry()">
+                  <i data-lucide="refresh-cw"></i> Refresh List
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="data-table" id="datasets-table">
+                  <thead>
+                    <tr>
+                      <th>Dataset Name</th>
+                      <th>Records</th>
+                      <th>Storage Path</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody id="datasets-tbody">
+                    <tr>
+                      <td colspan="4" class="empty-cell">No datasets registered</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ─── FORECAST PAGE ─── -->
+        <section id="page-forecast" class="page">
+          <div class="content-card">
+            <div class="card-header">
+              <h3><i data-lucide="trending-up"></i> Demand Forecast</h3>
+            </div>
+            <div class="card-body">
+              <div class="forecast-controls">
+                <div class="form-group">
+                  <label for="forecast-product">Product</label>
+                  <select id="forecast-product" class="form-select">
+                    <option value="">Loading products...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="forecast-days">Horizon</label>
+                  <select id="forecast-days" class="form-select">
+                    <option value="7">7 Days</option>
+                    <option value="14" selected>14 Days</option>
+                    <option value="30">30 Days</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" onclick="runForecast()" id="forecast-btn">
+                  <i data-lucide="play"></i>
+                  <span>Generate Forecast</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-card" id="forecast-chart-card" style="display:none;">
+            <div class="card-header">
+              <h3><i data-lucide="line-chart"></i> Forecast Results</h3>
+              <span class="badge badge-primary" id="forecast-product-badge"></span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrapper">
+                <canvas id="forecast-chart"></canvas>
+              </div>
+              <div class="forecast-table-container">
+                <table class="data-table" id="forecast-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Predicted Sales</th>
+                      <th>Lower Bound</th>
+                      <th>Upper Bound</th>
+                    </tr>
+                  </thead>
+                  <tbody id="forecast-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── ANOMALY PAGE ─── -->
+        <section id="page-anomaly" class="page">
+          <div class="content-card">
+            <div class="card-header">
+              <h3><i data-lucide="shield-alert"></i> Anomaly Detection</h3>
+              <div class="card-header-actions">
+                <select id="severity-filter" class="form-select form-select-sm" onchange="loadAlerts()">
+                  <option value="">All Severities</option>
+                  <option value="warning">⚠ Warning</option>
+                  <option value="critical">🔴 Critical</option>
+                </select>
+                <button class="btn btn-warning btn-sm" onclick="handleRunDetection()">
+                  <i data-lucide="scan-search"></i> Run Detection
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="loadAlerts()">
+                  <i data-lucide="refresh-cw"></i> Refresh
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="anomaly-run-result" class="upload-result hidden"></div>
+              <div class="table-container">
+                <table class="data-table" id="alerts-table">
+                  <thead>
+                    <tr>
+                      <th>Severity</th>
+                      <th>Product</th>
+                      <th>Date</th>
+                      <th>Qty Sold</th>
+                      <th>Score</th>
+                      <th>Message</th>
+                      <th>Detected At</th>
+                    </tr>
+                  </thead>
+                  <tbody id="alerts-tbody">
+                    <tr>
+                      <td colspan="7" class="empty-cell">No alerts found</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="alert-count-bar" id="alert-count-bar"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── AI ASSISTANT PAGE ─── -->
+        <section id="page-assistant" class="page">
+          <div class="assistant-layout">
+
+            <!-- Sessions Sidebar -->
+            <div class="chat-sessions-panel" id="chat-sessions-panel">
+              <div class="sessions-header">
+                <h4><i data-lucide="message-square"></i> Sessions</h4>
+                <button class="btn btn-primary btn-sm" onclick="startNewSession()">
+                  <i data-lucide="plus"></i> New
+                </button>
+              </div>
+              <div class="sessions-list" id="sessions-list">
+                <div class="empty-state-mini">No conversations yet</div>
+              </div>
+              <div class="sessions-footer">
+                <button class="btn btn-outline btn-sm btn-full" onclick="handleEmbedRecords()" id="embed-btn">
+                  <i data-lucide="database"></i>
+                  <span>Embed Records for RAG</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-main">
+              <div class="chat-messages" id="chat-messages">
+                <!-- Welcome State -->
+                <div class="chat-welcome" id="chat-welcome">
+                  <div class="chat-welcome-icon">
+                    <i data-lucide="sparkles"></i>
+                  </div>
+                  <h3>Smart Retail AI Assistant</h3>
+                  <p>Ask me anything about your store's sales, forecasts, anomalies, or get inventory recommendations.
+                  </p>
+                  <div class="chat-suggestions">
+                    <button class="suggestion-chip" onclick="sendSuggestion('Which products need restocking?')">
+                      <i data-lucide="package"></i> Which products need restocking?
+                    </button>
+                    <button class="suggestion-chip"
+                      onclick="sendSuggestion('What are the forecast sales for next week?')">
+                      <i data-lucide="trending-up"></i> Forecast sales for next week?
+                    </button>
+                    <button class="suggestion-chip" onclick="sendSuggestion('Show me the top selling products')">
+                      <i data-lucide="bar-chart-3"></i> Top selling products
+                    </button>
+                    <button class="suggestion-chip" onclick="sendSuggestion('Are there any unusual sales patterns?')">
+                      <i data-lucide="scan-search"></i> Unusual sales patterns?
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Area -->
+              <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                  <textarea id="chat-input" rows="1"
+                    placeholder="Ask about your store's data, forecasts, or get advice..."
+                    onkeydown="handleChatKeyDown(event)" oninput="autoResizeTextarea(this)"></textarea>
+                  <button class="chat-send-btn" id="chat-send-btn" onclick="handleSendMessage()">
+                    <i data-lucide="send"></i>
+                  </button>
+                </div>
+                <div class="chat-input-hint">
+                  <span>Powered by Data Agent, ML Agent & Advisor Agent</span>
+                  <span id="chat-agent-info"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── INVENTORY PAGE ─── -->
+        <section id="page-products" class="page">
+
+          <!-- Header Row -->
+          <div class="page-action-bar">
+            <div>
+              <h3 class="page-section-title"><i data-lucide="boxes"></i> Inventory</h3>
+              <p class="page-section-sub" id="products-count-label">Manage your product catalog — add manually or import
+                from CSV</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-outline" onclick="toggleInventoryImport()">
+                <i data-lucide="file-up"></i> Import CSV
+              </button>
+              <button class="btn btn-primary" onclick="openProductModal()">
+                <i data-lucide="plus"></i> Add Product
+              </button>
+            </div>
+          </div>
+
+          <!-- CSV Import Panel (hidden by default) -->
+          <div id="inventory-import-panel" class="inv-import-panel hidden">
+
+            <div class="inv-import-header">
+              <div>
+                <h4><i data-lucide="file-up"></i> Import Products from CSV</h4>
+                <p>Upload a CSV file to bulk-add or update your inventory.</p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="api.downloadProductTemplate()"
+                title="Download template CSV">
+                <i data-lucide="download"></i> Download Template
+              </button>
+            </div>
+
+            <!-- Column format guide -->
+            <div class="inv-col-guide">
+              <span class="inv-col-guide-title">Expected columns:</span>
+              <div class="inv-col-chips">
+                <span class="inv-col-chip required">product_name *</span>
+                <span class="inv-col-chip required">price *</span>
+                <span class="inv-col-chip">category</span>
+                <span class="inv-col-chip">stock</span>
+                <span class="inv-col-chip">cost</span>
+                <span class="inv-col-chip">description</span>
+                <span class="inv-col-chip">image_url</span>
+              </div>
+              <span class="inv-col-guide-note">Column names are flexible — aliases like <em>qty, mrp, item name,
+                  desc</em> are auto-mapped.</span>
+            </div>
+
+            <!-- Upload zone -->
+            <div class="inv-upload-zone" id="inv-upload-zone" ondrop="handleInventoryDrop(event)"
+              ondragover="event.preventDefault(); this.classList.add('dragging')"
+              ondragleave="this.classList.remove('dragging')">
+              <i data-lucide="hard-drive-upload"></i>
+              <p>Drag &amp; drop your product CSV here</p>
+              <span>or</span>
+              <label for="inv-file-input" class="btn btn-outline btn-sm">Browse File</label>
+              <input type="file" id="inv-file-input" accept=".csv" hidden onchange="handleInventoryFileSelect(event)" />
+              <span class="inv-filename" id="inv-filename"></span>
+            </div>
+
+            <!-- Import options -->
+            <div class="inv-import-options">
+              <label class="inv-mode-label">Duplicate handling:</label>
+              <div class="inv-mode-radios">
+                <label class="inv-radio">
+                  <input type="radio" name="inv-mode" value="upsert" checked />
+                  <span><strong>Update existing</strong> — update price, stock &amp; details if product already
+                    exists</span>
+                </label>
+                <label class="inv-radio">
+                  <input type="radio" name="inv-mode" value="insert_new" />
+                  <span><strong>Skip existing</strong> — only add new products, leave existing untouched</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="inv-import-actions">
+              <button id="inv-import-btn" class="btn btn-primary" onclick="handleInventoryImport()" disabled>
+                <i data-lucide="upload"></i> Import Products
+              </button>
+              <div id="inv-import-result" class="inv-import-result hidden"></div>
+            </div>
+
+          </div>
+
+          <!-- Products Grid -->
+          <div id="owner-products-grid" class="owner-products-grid">
+            <div class="page-loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ─── ORDERS PAGE ─── -->
+        <section id="page-orders" class="page">
+
+          <!-- Tabs -->
+          <div class="orders-tabs-bar">
+            <button class="orders-tab active" id="otab-pending" onclick="switchOrderTab('pending')">
+              <i data-lucide="clock"></i> Pending
+              <span class="tab-count" id="otab-pending-count">0</span>
+            </button>
+            <button class="orders-tab" id="otab-all" onclick="switchOrderTab('all')">
+              <i data-lucide="list"></i> All Orders
+            </button>
+          </div>
+
+          <!-- Pending Orders -->
+          <div id="orders-pending-panel">
+            <div id="pending-orders-list" class="orders-list">
+              <div class="page-loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Orders -->
+          <div id="orders-all-panel" class="hidden">
+            <div id="all-orders-list" class="orders-list">
+              <div class="page-loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+            <div id="all-orders-pagination" class="pagination"></div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ── Product Add/Edit Modal ── -->
+  <div id="product-modal" class="modal-overlay hidden">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <h3 id="product-modal-title"><i data-lucide="package"></i> Add Product</h3>
+        <button class="modal-close-btn" onclick="closeProductModal()"><i data-lucide="x"></i></button>
+      </div>
+      <form id="product-form" onsubmit="handleProductSave(event)">
+        <div class="modal-body modal-grid-2">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <div class="input-wrapper"><i data-lucide="tag"></i>
+              <input type="text" id="pf-name" placeholder="e.g. Nike Air Max" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <div class="input-wrapper"><i data-lucide="folder"></i>
+              <input type="text" id="pf-category" placeholder="e.g. Footwear" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Price (₹) *</label>
+            <div class="input-wrapper"><i data-lucide="indian-rupee"></i>
+              <input type="number" id="pf-price" placeholder="499" min="0" step="0.01" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Stock Quantity</label>
+            <div class="input-wrapper"><i data-lucide="boxes"></i>
+              <input type="number" id="pf-stock" placeholder="100" min="0" step="1" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Unit Cost (₹)</label>
+            <div class="input-wrapper"><i data-lucide="calculator"></i>
+              <input type="number" id="pf-cost" placeholder="350" min="0" step="0.01" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <div class="input-wrapper"><i data-lucide="image"></i>
+              <input type="url" id="pf-image" placeholder="https://..." />
+            </div>
+          </div>
+          <div class="form-group modal-full-col">
+            <label>Description</label>
+            <textarea id="pf-description" rows="3" placeholder="Product description..."
+              style="width:100%;background:var(--surface2);border:1px solid var(--glass-border);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-family:inherit;font-size:.9rem;resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" id="product-save-btn" class="btn btn-primary">
+            <i data-lucide="save"></i> <span>Save Product</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Inject Order Modal ── -->
+  <div id="inject-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:440px;">
+      <div class="modal-header">
+        <h3><i data-lucide="upload-cloud"></i> Upload & Inject Sale</h3>
+        <button class="modal-close-btn" onclick="closeInjectModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <input type="hidden" id="inject-order-id" />
+
+        <div class="inject-tabs">
+          <button id="itab-upload" class="inject-tab active" onclick="switchInjectTab('upload')">Upload New CSV</button>
+          <button id="itab-existing" class="inject-tab" onclick="switchInjectTab('existing')">Choose Existing</button>
+        </div>
+
+        <div id="inject-upload-panel">
+          <div class="inject-upload-box" id="inject-upload-zone" onclick="document.getElementById('inject-file-input').click()">
+            <div class="inject-upload-icon">
+              <i data-lucide="file-up"></i>
+            </div>
+            <h4>Select Dataset CSV</h4>
+            <p>Choose a CSV file (e.g. from your Desktop) to inject this sale record into.</p>
+            <input type="file" id="inject-file-input" accept=".csv" hidden onchange="handleInjectUpload(event)" />
+            <div class="btn btn-primary btn-sm" style="margin-top:12px;">
+              <i data-lucide="search"></i> Browse Files
+            </div>
+            <div id="inject-filename" class="inject-filename-display"></div>
+          </div>
+        </div>
+
+        <div id="inject-existing-panel" class="hidden">
+          <div class="form-group">
+            <label>Select Target Dataset <span id="inject-dataset-count" class="badge badge-info"></span></label>
+            <select id="inject-dataset-select" class="form-select" style="margin-bottom:12px;">
+              <option value="">Loading datasets...</option>
+            </select>
+          </div>
+          <div id="inject-dataset-meta" class="inject-dataset-meta"></div>
+          <button id="inject-confirm-btn" class="btn btn-primary btn-full" onclick="confirmInject()" disabled style="margin-top:12px;">
+            <i data-lucide="upload"></i> Inject Sale
+          </button>
+        </div>
+
+        <div id="inject-status" class="inject-status-area hidden">
+          <div class="spinner"></div>
+          <span id="inject-status-text">Processing upload...</span>
+        </div>
+
+        <div class="inject-info-banner" style="margin-top:20px;">
+          <i data-lucide="info"></i>
+          <span>The file will be updated with the new sale and stored in your Data Manager.</span>
+        </div>
+
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-full" onclick="closeInjectModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-icon"><i data-lucide="alert-triangle"></i></div>
+      <h3 id="confirm-title">Are you sure?</h3>
+      <p id="confirm-message">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+        <button class="btn btn-danger" id="confirm-action-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/owner_portal.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

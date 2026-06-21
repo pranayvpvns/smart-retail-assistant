@@ -1,0 +1,8 @@
+1) docker build --no-cache -f backend/Dockerfile -t smart-retail-backend .
+2)docker tag smart-retail-backend smartretailacr.azurecr.io/smart-retail-backend:latest
+3)az acr login --name smartretailacr
+4)docker push smartretailacr.azurecr.io/smart-retail-backend:latest
+5)az containerapp update `
+  --name smart-retail-api `
+  --resource-group smart_retail6765 `
+  --image smartretailacr.azurecr.io/smart-retail-backend:latest

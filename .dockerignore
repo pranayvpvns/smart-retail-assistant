@@ -1,0 +1,17 @@
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+db
+vector_store
+data
+scratch
+
+.git
+.idea
+.vscode
+
+*.pkl
+*.parquet

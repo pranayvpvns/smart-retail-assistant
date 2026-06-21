@@ -1,0 +1,40 @@
+# Virtual Environment
+venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Variables
+.env
+
+# Frontend
+node_modules/
+dist/
+build/
+
+# Spark / Data
+tmp/
+spark-warehouse/
+
+# Local Data
+db/
+vector_store/
+data/
+scratch/
+
+# Model Files
+*.pkl
+*.parquet
+
+# IDE
+.idea/
+.vscode/
+
+# Notebook
+.ipynb_checkpoints/
+
+# Logs
+*.log

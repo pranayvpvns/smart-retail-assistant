@@ -1,0 +1,10 @@
+{
+  "name": "smart-retail-frontend",
+  "version": "1.0.0",
+  "description": "Smart Retail Assistant — Frontend Dashboard",
+  "scripts": {
+    "dev": "npx -y serve . -l 3000 --cors",
+    "start": "npx -y serve . -l 3000 --cors",
+    "build": "echo build complete"
+  }
+}
